@@ -17,7 +17,6 @@ check_and_start_container() {
     fi
 }
 
-
 # Function to check if SSH is running in the container and start it if necessary
 check_and_start_ssh() {
     container=$1
@@ -27,6 +26,18 @@ check_and_start_ssh() {
         echo -e "[$container] - ${GREEN}running${NC}"
     else
         docker exec "$container" service ssh start > /dev/null 2>&1 && echo -e "[$container] - ${GREEN}running${NC}"
+    fi
+}
+
+# Function to test SSH connection
+test_ssh_connection() {
+    container=$1
+    container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container")
+
+    if ssh -o BatchMode=yes -o ConnectTimeout=5 root@"$container_ip" "echo SSH connection successful" 2>/dev/null; then
+        echo -e "[$container] - ${GREEN}Successful${NC}"
+    else
+        echo -e "[$container] - ${GREEN}Failed${NC}"
     fi
 }
 
@@ -40,4 +51,10 @@ done
 echo "[===== SSH-Status =====]"
 for container in "${containers[@]}"; do
     check_and_start_ssh "$container"
+done
+
+# Test SSH connections
+echo "[===== SSH Connection =====]"
+for container in "${containers[@]}"; do
+    test_ssh_connection "$container"
 done
