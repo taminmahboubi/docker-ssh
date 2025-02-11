@@ -3,10 +3,10 @@
 # Array of containers
 containers=("managed-node1" "managed-node2" "managed-node3")
 
-# Define green text using tput
-GREEN=$(tput setaf 2)  # 2 is the color code for green
-NC=$(tput sgr0)        # Reset color
-RED=$(tput setaf 1)
+# ANSI colour codes for terminal output
+GREEN=$'\e[32m'  # 2 is the color code for green
+NC=$'\e[0m'        # Reset color
+RED=$'\e[31m'
 
 
 # Function to check if the container is running, and start it if not
